@@ -47,7 +47,7 @@ li.nav-item {
 /* Track */
 
  ::-webkit-scrollbar-track {
-    background-color: var(--colorPrimary);
+    background-color: rgb(206, 206, 206);
     border-radius: 5px;
 }
 
@@ -55,7 +55,7 @@ li.nav-item {
 /* Handle */
 
  ::-webkit-scrollbar-thumb {
-    background: rgb(223, 223, 223);
+    background: rgb(109, 202, 255);
     border-radius: 30px;
 }
 
@@ -113,7 +113,7 @@ div.d-inline-flex {
 }
 
 .column-title {
-    background-color: var(--colorPrimary);
+    background-color: rgb(97, 96, 96);
     font-weight: bold;
     text-align: center;
     font-size: 14px;
@@ -188,7 +188,7 @@ div.d-inline-flex {
 
 .card-table {
     overflow-y: scroll;
-    max-height: 40vh;
+    max-height: 36vh;
 }
 
 .card-table thead {
@@ -236,4 +236,48 @@ div.d-inline-flex {
 .bi-plus-circle-fill:hover {
     color: #0081f9;
     transition: all 0.5s ease
+}
+
+.bi-printer-fill {
+    color: rgb(177, 177, 177);
+}
+
+.bi-printer-fill:hover {
+    color: black;
+}
+
+.printer-tag-title {
+    color: rgb(189, 189, 189);
+}
+
+#groups-of-printers {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+#groups-of-printers div {
+    flex: 0 0 23%;
+    position: relative;
+}
+
+.iconClearSm {
+    position: absolute;
+    top: -2px;
+    right: 2px;
+    color: grey;
+    display: none;
+    background-color: rgb(250, 0, 0);
+    opacity: 0.9;
+    border-radius: 45%;
+}
+
+#groups-of-printers div:hover .iconClearSm {
+    display: block;
+}
+
+.width25 {
+    max-width: 25%;
+    margin: auto;
 }
