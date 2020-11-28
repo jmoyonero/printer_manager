@@ -17,7 +17,23 @@ imagesPath.push("img/secretaria_logo.png")
 imagesPath.push("img/fdi_logo.png")
 imagesPath.push("img/fisicas_logo.png")
 
+// lista de badges
+let badgesList = new Array();
+badgesList.push("badge-group-1")
+badgesList.push("badge-group-2")
+badgesList.push("badge-group-3")
+badgesList.push("badge-group-4")
+
+
 let groupImageDict = new Object();
+
+// inicializa el objeto que relaciona imagen y color de badge a un grupo.
+function assignGroupImages() {
+    Pmgr.globalState.groups.forEach(group => {
+        let randomColorBadge = badgesList[randomInRange(0, badgesList.length - 1)];
+        groupImageDict[group.name] = [randomImageGroup(), randomColorBadge];
+    })
+}
 
 function listenerMenuContextPrinter() {
     //CLIC DERECHO EN IMPRESORAS
@@ -67,43 +83,59 @@ function listenerMenuContextTable() {
     });
 }
 
+function listenerNewPrinter() {
+    $("#button-new-printer").on("click", function () {
+        let printer = new Pmgr.Printer();
+        // TODO: ¿Cómo generamos id, temporalmente se me ocurre incrementando suma: grupos+impresoras+trabajos? ya que esto nos lo devolvera el API
+        printer.id = 1000;
+        printer.alias = $('#input-alias').val();
+        printer.location = $('#input-location').val();
+        printer.model = $('#input-model').val();
+        printer.ip = $('#input-ip').val();
+
+        addPrinter(printer);
+    });
+}
+
+function listenerNewGroup() {
+    $("#button-new-group").on("click", function () {
+        let group = new Pmgr.Group();
+        group.name = $('#input-name').val();
+        group.id = 1001;
+        addGroup(group);
+    });
+}
+
+function listenerAddPrinterToGroup() {
+    $("#add-printer-to-group").on("click", function () {
+        let groupName = $('#select-printer-groups').val();
+        let printerAlias = $('#select-printer-groups').attr("printer-alias");
+        addPrinterToGroup(printerAlias, groupName);
+    });
+}
+
+
+function updateDropdownGroupList(printerAlias) {
+    $('#select-printer-groups').empty();
+    $('#select-printer-groups').attr("printer-alias", `${printerAlias}`);
+    Pmgr.globalState.groups.forEach(group => {
+        let groupItem = $(`<option>${group.name}</option>`)
+        $('#select-printer-groups').append(groupItem);
+    });
+}
+
 function initializeListeners() {
-
-    $(".list-card-item").click(function (event) {
-        if (e.target && e.target.attr('class') == 'list-card-item') {
-            let alias = $(this).find("h3").text();
-            let printerContainer = $(this).find(".printerItemContainer");
-            if (printerContainer.length > 0) {
-                update(alias, false);
-            } else {
-                update(alias, true);
-            }
-        }
-    })
-
-    // listener para las impresoras en un grupo de impresoras
+    // listener para el buscador
     document.addEventListener('input', function (e) {
         if (e.target && e.target.id == 'search') {
             search($('#search').val());
         }
     });
-
-    // listener para las impresoras en un grupo de impresoras
-    document.addEventListener('click', function (e) {
-        if (e.target && e.target.id == 'list-card-item-printer') {
-            update(e.srcElement.innerHTML, false);
-        }
-    });
-
-    // listener para los grupos de una impresora
-    document.addEventListener('click', function (e) {
-        if (e.target && e.target.id == 'list-card-item-group') {
-            update(e.srcElement.innerHTML, true);
-        }
-    });
-
     listenerMenuContextPrinter();
     listenerMenuContextTable();
+    listenerNewPrinter();
+    listenerNewGroup();
+    listenerAddPrinterToGroup();
 }
 
 function update(alias, isGroup) {
@@ -121,6 +153,61 @@ function update(alias, isGroup) {
         updatePrinterDetails(printer);
         updateGroupsOfAPrinter(printer);
     }
+}
+
+/*************************************************************************************
+ * API TEMPORAL
+ * Funciones para modificar temporalmente el estado global
+ ************************************************************************************/
+
+// función para añadir una nueva impresora
+function addPrinter(printer) {
+
+    // TODO: ¿Establecemos un estatus estatico a las nuevas impresoras o las generamos aleatoriamente?
+    printer.status = 'paused'
+
+    let aux = searchPrinterByName(printer.alias);
+    if (aux) {
+        // TODO: Cambiemos este alert que el profe nos mata jaja
+        alert('Ya existe una impresora con el alias ' + printer.alias)
+    } else {
+        Pmgr.globalState.printers.push(printer);
+        $("#new-printer").modal('toggle');
+    }
+    updatePrinterAccordion(Pmgr.globalState.printers);
+}
+
+// función para añadir un nuevo grupo
+function addGroup(group) {
+    let aux = searchGroupByName(group.name);
+    if (aux) {
+        // TODO: Cambiemos este alert que el profe nos mata jaja
+        alert('Ya existe un grupo con el nombre ' + group.name)
+    } else {
+        Pmgr.globalState.groups.push(group);
+        $("#new-group").modal('toggle');
+    }
+    let randomColorBadge = badgesList[randomInRange(0, badgesList.length - 1)];
+    groupImageDict[group.name] = [randomImageGroup(), randomColorBadge];
+    updateGroupAccordion(Pmgr.globalState.groups);
+}
+
+// función para añadir una impresora a un nuevo grupo
+function addPrinterToGroup(printerAlias, groupName) {
+
+    let printer = searchPrinterByName(printerAlias);
+    let group = searchGroupByName(groupName);
+    let exist = group.printers.find(p => p === printer.id)
+    if (exist) {
+        // TODO: Cambiemos este alert que el profe nos mata jaja
+        alert('La impresora ya se encuentra en el grupo ' + group.name)
+    } else {
+        let index = Pmgr.globalState.groups.findIndex(g => g.name === groupName);
+        Pmgr.globalState.groups[index].printers.push(printer.id);
+        $("#new-group-printer").modal('toggle');
+    }
+    updateGroupsOfAPrinter(searchPrinterByName(printerAlias));
+    updatePrinterAccordion(Pmgr.globalState.printers)
 }
 
 /*************************************************************************************
@@ -171,20 +258,14 @@ function search(text) {
     // TODO: información inicial en memoria, temporal hasta que podamos usar las apis
     let state = Pmgr.globalState;
 
-    let groupsFilter = state.groups.filter(g => g.name.toLowerCase().search(text.toLowerCase()) != -1);
-    let printersFilter = state.printers.filter(p =>
+    let filteredGroups = state.groups.filter(g => g.name.toLowerCase().search(text.toLowerCase()) != -1);
+    let filteredPrinters = state.printers.filter(p =>
         p.alias.toLowerCase().search(text.toLowerCase()) != -1 ||
         p.ip.search(text) != -1 ||
         p.location.toLowerCase().search(text.toLowerCase()) != -1);
 
-
-    $("#accordionGrupoImpresoras").empty();
-    groupsFilter.forEach(m => $("#accordionGrupoImpresoras").append(createGroupItem(m)));
-
-    $("#accordionImpresoras").empty();
-    printersFilter.forEach(m => $("#accordionImpresoras").append(createPrinterItem(m)));
-
-    initializeListeners();
+    updateGroupAccordion(filteredGroups);
+    updatePrinterAccordion(filteredPrinters);
 }
 
 /*************************************************************************************
@@ -216,7 +297,7 @@ function updateQueue(jobs, printers) {
     jobs.filter(j => printerIds.includes(j.printer)).forEach(job => {
         let printer = printers.filter(printer => job.printer === printer.id)[0];
         queue.append(`<tr>`);
-        queue.append(`<td scope="row">${job.id}</td>`);
+        queue.append(`<td scope = "row" >${job.id} </td>`);
         if (isGroup) {
             queue.append(`<td scope="row">${printer.alias}</td>`);
         }
@@ -298,31 +379,38 @@ function updateGroupDetails(group) {
 // función para actualizar la lista de impresoras del grupo actual
 function updatePrintersOfAGroup(printers) {
 
-    // limpiamos el contenedor
     $("#printers-in-group").empty();
 
     printers.forEach(printer => {
-        $("#printers-in-group").append(
-            `<span id="list-card-item-printer" type="button" class="badge badge-secondary badge-details">${printer.alias}</span> `);
+        let new_element = $(`<span id="list-card-item-printer" type="button" class="badge badge-secondary badge-details">${printer.alias}</span>`);
+        new_element.click(function () {
+            update(printer.alias, false)
+        });
+        $("#printers-in-group").append(new_element).append(' ');
     });
 }
 
-function updateGroupsOfAPrinter(printers) {
+function updateGroupsOfAPrinter(printer) {
+
     $("#groups-of-printers").empty();
-    let arraysgroups = groupsOfPrinter(printers);
-    let allGroups = arraysgroups.map((group) =>
-        `<div class="width25">
-       <svg aria-hidden="true" type="button" class="svg-icon iconClearSm" width="14" height="14" viewBox="0 0 14 14"><path d="M12 3.41L10.59 2 7 5.59 3.41 2 2 3.41 5.59 7 2 10.59 3.41 12 7 8.41 10.59 12 12 10.59 8.41 7 12 3.41z"></path></svg>
-        <span id="list-card-item-group" type="button" class="badge badge-secondary badge-details ${groupImageDict[group.name][1]}">${group.name}</span></div>`).join(" ");
+
+    let groups = groupsOfPrinter(printer);
+    groups.forEach(group => {
+        let mainElement = $(`<div class="width25">`);
+        mainElement.click(function () {
+            update(group.name, true)
+        });
+        mainElement.append(`<span id="list-card-item-group" type="button" class="badge badge-secondary badge-details ${groupImageDict[group.name][1]}">${group.name}</span></div>`);
+        $("#groups-of-printers").append(mainElement)
+    });
+
     $("#groups-of-printers").append(
-        `${allGroups}
-    <div>
-    <svg data-toggle="modal" data-target="#new-group-printer" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg" type="button"
-    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-    </svg>
-    </div>
-    `);
+        $(`<div>
+                <svg data-toggle="modal" data-target="#new-group-printer" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg" type="button"
+                   aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                </svg>
+            </div>`).click(() => updateDropdownGroupList(printer.alias)));
 }
 
 // función para mostrar los detalles de impresoras o grupos de impresoras
@@ -351,71 +439,63 @@ function showDetails() {
 // en respuesta a algún evento.
 //
 
-function createPrinterItem(printer) {
-    const rid = 'x_' + Math.floor(Math.random() * 1000000);
-    const hid = 'h_' + rid;
-    const cid = 'c_' + rid;
+// actualiza el acordión de impresoras
+function updatePrinterAccordion(printers) {
 
-    // usar [] en las claves las evalua (ver https://stackoverflow.com/a/19837961/15472)
-    const PS = Pmgr.PrinterStates;
-    let pillClass = {
-        [PS.PAUSED]: "badge-secondary",
-        [PS.PRINTING]: "badge-success",
-        [PS.NO_INK]: "badge-danger",
-        [PS.NO_PAPER]: "badge-danger"
-    };
+    $("#accordionImpresoras").empty();
 
+    printers.forEach(printer => {
+        let max_visible_groups = 2;
 
-    let max_visible_groups = 2;
+        let listOfGroups = groupsOfPrinter(printer);
 
-    let allJobs = printer.queue.map((id) =>
-        `<span class="badge badge-secondary">${id}</span>`
-    ).join(" ");
+        let allGroups = listOfGroups.slice(0, max_visible_groups).map(group => {
+            return `<span class="badge badge-secondary ${groupImageDict[group.name][1]}">${group.name}</span>`
+        }).join(" ");
 
-    let listOfGroups = groupsOfPrinter(printer);
+        let extra_group = "";
+        if (listOfGroups.length > max_visible_groups) {
+            extra_group = `<span class="badge badge-secondary">+${listOfGroups.length - max_visible_groups}</span>`
+        }
 
-    let allGroups = listOfGroups.slice(0, max_visible_groups).map(group => {
-        return `<span class="badge badge-secondary ${groupImageDict[group.name][1]}">${group.name}</span>`
-    }).join(" ");
+        let mainElement = $(`<button id="printer-button" class="card list-card-item center">`);
+        mainElement.click(function () {
+            update(printer.alias, false)
+        });
 
-    let extra_group = "";
-    if (listOfGroups.length > max_visible_groups) {
-        extra_group = `<span class="badge badge-secondary">+${listOfGroups.length - max_visible_groups}</span>`
-    }
+        let printerItem = $(`<div class="printerItemContainer">`);
+        printerItem.append(`<img class="card-img-top card-img-left" src="img/win_printer.png" alt="Imagen de la impresora">`);
+        printerItem.append(`<h3 class="card-title printer_id">${printer.alias}</h3>`);
+        printerItem.append(`<img class="icon" src="img/status/${printer.status}.png" alt="Imagen de la impresora">`);
+        printerItem.append(`</span>`);
+        printerItem.append(`<p class="groupParagraph">${allGroups} ${extra_group}</p>`);
 
-    return `
-    <button id="printer-button" class="card list-card-item center">
-    <div class="printerItemContainer">
-    <img class="card-img-top card-img-left" src="img/win_printer.png" alt="Imagen de la impresora">
-    <h3 class="card-title printer_id">${printer.alias}</h3>
-    <img class="icon" src="img/status/${printer.status}.png" alt="Imagen de la impresora">
-    </span>
-    <p class="groupParagraph">${allGroups} ${extra_group}</p>
-    </div>
-    </button>
-    `;
+        mainElement.append(printerItem);
 
+        $("#accordionImpresoras").append(mainElement);
+    });
 }
 
+// actualiza el acordión de grupos
+function updateGroupAccordion(groups) {
 
-function createGroupItem(group) {
-    const rid = 'gx_' + Math.floor(Math.random() * 1000000);
-    const hid = 'gh_' + rid;
-    const cid = 'gc_' + rid;
+    $("#accordionGrupoImpresoras").empty();
 
-    let groupBadge = ["badge-group-1", "badge-group-2", "badge-group-3", "badge-group-4"];
-    let ramdomColorBadge = groupBadge[randomInRange(0, groupBadge.length - 1)];
+    groups.forEach(group => {
 
-    groupImageDict[group.name] = [randomImageGroup(), ramdomColorBadge];
+        let mainElement = $(`<div class="card list-card-item center">`);
+        mainElement.click(function () {
+            update(group.name, true)
+        });
 
-    return `
-    <div class="card list-card-item center">
-    <div class="img_group">
-    <img class="card-img-right" src="${groupImageDict[group.name][0]}" alt="Imagen del Grupo">
-    </div>
-    <h3 class="card-title">${group.name}</h3>
-    </div>
-    `;
+        let groupItem = $(`<div class="img_group">`);
+        groupItem.append(`<img class="card-img-right" src="${groupImageDict[group.name][0]}" alt="Imagen del Grupo">`);
+
+        mainElement.append(groupItem);
+        mainElement.append(`<h3 class="card-title">${group.name}</h3>`);
+
+        $("#accordionGrupoImpresoras").append(mainElement);
+    });
 }
 
 // funcion para generar datos de ejemplo: impresoras, grupos, trabajos, ...
@@ -493,17 +573,9 @@ $(function () {
         try {
             //HEMOS EL ORDEN PARA PODER INICIALZIAR LOS GRUPOS
 
-            // vaciamos un contenedor
-            $("#accordionGrupoImpresoras").empty();
-            // y lo volvemos a rellenar con su nuevo contenido
-            Pmgr.globalState.groups.forEach(m => $("#accordionGrupoImpresoras").append(createGroupItem(m)));
-
-
-            // vaciamos un contenedor
-            $("#accordionImpresoras").empty();
-            // y lo volvemos a rellenar con su nuevo contenido
-            Pmgr.globalState.printers.forEach(m => $("#accordionImpresoras").append(createPrinterItem(m)));
-            // y asi para cada cosa que pueda haber cambiado
+            assignGroupImages();
+            updateGroupAccordion(Pmgr.globalState.groups);
+            updatePrinterAccordion(Pmgr.globalState.printers);
 
             showDetails();
             updateQueue(Pmgr.globalState.jobs, Pmgr.resolve(0));
@@ -541,4 +613,5 @@ $(function () {
 // cosas que exponemos para usarlas desde la consola
 window.populate = populate
 window.Pmgr = Pmgr;
+
 // window.createPrinterItem = createPrinterItemupdate
