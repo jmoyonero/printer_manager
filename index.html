@@ -7,10 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <!--<link rel="stylesheet" href="css/bootstrap.css">-->
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
-          integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     <link rel="stylesheet" href="css/custom.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
@@ -20,10 +18,15 @@
 
 <body>
 
+
 <div class="dropdown-menu dropdown-menu-sm menu-impresora" id="context-menu">
-    <a class="dropdown-item" href="#">Imprimir</a>
-    <a class="dropdown-item" href="#">Pausar</a>
-    <a class="dropdown-item" href="#">Cancelar</a>
+
+    <label class="dropdown-item" for="right-click-file">Imprimir</label>
+    <input id="right-click-file" type="file">
+    <a class="dropdown-item" id="dropdown-pause" href="#">Pausar</a>
+    <a class="dropdown-item" id="dropdown-cancel" href="#">Cancelar</a>
+
+
 </div>
 
 <div class="dropdown-menu dropdown-menu-sm menu-impresora" id="contextmenuRow">
@@ -35,8 +38,7 @@
     <!-- nombre del sitio; es un enlace que lleva a la página ppal -->
     <a class="navbar-brand" href="#">Printer Manager</a>
 
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="container">
@@ -45,8 +47,7 @@
                 <li class="nav-item" type="button" data-toggle="modal" data-target="#new-printer">
 
                     <a class="nav-link d-flex flex-column" href="#">
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus" fill="currentColor"
-                             xmlns="http://www.w3.org/2000/svg">
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd"
                                   d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                         </svg>
@@ -56,8 +57,7 @@
 
                 <li class="nav-item d-flex flex-column" type="button" data-toggle="modal" data-target="#new-group">
                     <a class="nav-link d-flex flex-column" href="#">
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-collection-fill"
-                             fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-collection-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path d="M0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7z"/>
                             <path fill-rule="evenodd"
                                   d="M2 3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11A.5.5 0 0 0 2 3zm2-2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7A.5.5 0 0 0 4 1z"/>
@@ -66,13 +66,14 @@
                     </a>
                 </li>
 
-
                 <li class="nav-item d-flex flex-column" type="button" data-toggle="modal" data-target="#filter">
-                    <form class="form-inline my-2 my-lg-0">
-                        <input id="search" class="form-control mr-sm-2" type="search" placeholder="Search"
-                               aria-label="Search">
-                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                    </form>
+
+                    <div class="search">
+                        <div class="form-group has-search">
+                            <span class="fa fa-search form-control-feedback"></span>
+                            <input id="search" type="text" class="form-control" placeholder="Search">
+                        </div>
+                    </div>
                 </li>
             </ul>
         </div>
@@ -155,8 +156,7 @@
 </div>
 
 <!-- Group ADD modal -->
-<div class="modal fade" id="new-group-printer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-     aria-hidden="true">
+<div class="modal fade" id="new-group-printer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -165,12 +165,15 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form>
-                <select id="select-printer-groups" class="form-control">
-                </select>
-                <br>
-                <button type="submit" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+            <form id="form-select-pritner" action="">
+                <input id="select-printer-groups" class="form-control" list="list-printer-groups">
+                <datalist id="list-printer-groups">
+                    <option value="Nada"></option>
+                </datalist>
+
                 <button id="add-printer-to-group" type="submit" class="btn btn-primary">Añadir</button>
+                <button type="submit" class="btn btn-primary color-grey" data-dismiss="modal">Cancelar</button>
+
             </form>
         </div>
     </div>
@@ -195,8 +198,7 @@
 
                 <div class="form-group">
                     <label for="input-location">Localización</label>
-                    <input type="text" class="form-control" id="input-location"
-                           placeholder="Localización de la impresora">
+                    <input type="text" class="form-control" id="input-location" placeholder="Localización de la impresora">
                 </div>
                 <div class="form-group">
                     <label for="input-model">Modelo</label>
@@ -207,8 +209,8 @@
                     <label for="input-ip">Dirección IP</label>
                     <input type="text" class="form-control" id="input-ip" placeholder="Dirección IP de la impresora">
                 </div>
-                <button type="submit" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
                 <button id="button-new-printer" type="submit" class="btn btn-primary">Crear</button>
+                <button type="submit" class="btn btn-primary color-grey" data-dismiss="modal">Cancelar</button>
             </form>
         </div>
     </div>
@@ -227,11 +229,10 @@
             <form>
                 <div class="form-group">
                     <label for="input-name">Nombre</label>
-                    <input type="text" class="form-control" id="input-name"
-                           placeholder="Nombre del grupo de impresoras">
+                    <input type="text" class="form-control" id="input-name" placeholder="Nombre del grupo de impresoras">
                 </div>
-                <button type="submit" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
                 <button id="button-new-group" type="submit" class="btn btn-primary">Crear</button>
+                <button type="submit" class="btn btn-primary color-grey" data-dismiss="modal">Cancelar</button>
             </form>
         </div>
     </div>

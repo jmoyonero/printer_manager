@@ -19,11 +19,10 @@ imagesPath.push("img/fisicas_logo.png")
 
 // lista de badges
 let badgesList = new Array();
-badgesList.push("badge-group-1")
-badgesList.push("badge-group-2")
-badgesList.push("badge-group-3")
-badgesList.push("badge-group-4")
-
+for (let i = 0; i < 10; ++i) {
+    let badgeClass = "badge-group-" + i;
+    badgesList.push(badgeClass)
+}
 
 let groupImageDict = new Object();
 
@@ -35,9 +34,13 @@ function assignGroupImages() {
     })
 }
 
-function listenerMenuContextPrinter() {
+let itemSelectedOnContextMenu;
+
+function listenerMenuContextPrinter(obj) {
     //CLIC DERECHO EN IMPRESORAS
-    $('.printerItemContainer').on('contextmenu', function (e) {
+    //$('.printerItemContainer').on('contextmenu', function(e) {
+    obj.on('contextmenu', function(e) {
+        itemSelectedOnContextMenu = $(this);
         let top = e.pageY - 10;
         let left = e.pageX - 90;
         $("#context-menu").css({
@@ -46,22 +49,20 @@ function listenerMenuContextPrinter() {
             left: left
         }).addClass("show");
         return false; //blocks default Webbrowser right click menu
-    }).on("click", function () {
+    }).on("click", function() {
         $("#context-menu").removeClass("show").hide();
     });
 
-    $("#context-menu a").on("click", function () {
-        $(this).parent().removeClass("show").hide();
-    });
 
-    $("body").on("click", function () {
-        $("#context-menu").removeClass("show").hide();
-    });
+
+    //Escuchar las opciones del context menu
+
+
 }
 
 function listenerMenuContextTable() {
     //CLIC DERECHO EN TRABAJOS
-    $('#queue').on('contextmenu', function (e) {
+    $('#queue').on('contextmenu', function(e) {
         let top = e.pageY - 10;
         let left = e.pageX - 90;
         $("#contextmenuRow").css({
@@ -70,21 +71,21 @@ function listenerMenuContextTable() {
             left: left
         }).addClass("show");
         return false; //blocks default Webbrowser right click menu
-    }).on("click", function () {
+    }).on("click", function() {
         $("#contextmenuRow").removeClass("show").hide();
     });
 
-    $("#contextmenuRow a").on("click", function () {
+    $("#contextmenuRow a").on("click", function() {
         $(this).parent().removeClass("show").hide();
     });
 
-    $("body").on("click", function () {
+    $("body").on("click", function() {
         $("#contextmenuRow").removeClass("show").hide();
     });
 }
 
 function listenerNewPrinter() {
-    $("#button-new-printer").on("click", function () {
+    $("#button-new-printer").on("click", function() {
         let printer = new Pmgr.Printer();
         // TODO: ¿Cómo generamos id, temporalmente se me ocurre incrementando suma: grupos+impresoras+trabajos? ya que esto nos lo devolvera el API
         printer.id = 1000;
@@ -97,8 +98,10 @@ function listenerNewPrinter() {
     });
 }
 
+
+
 function listenerNewGroup() {
-    $("#button-new-group").on("click", function () {
+    $("#button-new-group").on("click", function() {
         let group = new Pmgr.Group();
         group.name = $('#input-name').val();
         group.id = 1001;
@@ -107,31 +110,52 @@ function listenerNewGroup() {
 }
 
 function listenerAddPrinterToGroup() {
-    $("#add-printer-to-group").on("click", function () {
+    $("#add-printer-to-group").on("click", function() {
         let groupName = $('#select-printer-groups').val();
-        let printerAlias = $('#select-printer-groups').attr("printer-alias");
+        let printerAlias = $('#list-printer-groups').attr("printer-alias");
         addPrinterToGroup(printerAlias, groupName);
     });
 }
 
-
+//"list-printer-groups"
 function updateDropdownGroupList(printerAlias) {
-    $('#select-printer-groups').empty();
-    $('#select-printer-groups').attr("printer-alias", `${printerAlias}`);
+    $('#list-printer-groups').empty();
+    $('#list-printer-groups').attr("printer-alias", `${printerAlias}`);
     Pmgr.globalState.groups.forEach(group => {
         let groupItem = $(`<option>${group.name}</option>`)
-        $('#select-printer-groups').append(groupItem);
+        $('#list-printer-groups').append(groupItem);
     });
 }
 
 function initializeListeners() {
     // listener para el buscador
-    document.addEventListener('input', function (e) {
+    document.addEventListener('input', function(e) {
         if (e.target && e.target.id == 'search') {
             search($('#search').val());
         }
     });
-    listenerMenuContextPrinter();
+
+    $("body").on("click", function() {
+        $("#context-menu").removeClass("show").hide();
+    });
+    $("#context-menu a").on("click", function() {
+        $(this).parent().removeClass("show").hide();
+    });
+
+    $("#dropdown-pause").on("click", function() {
+        let printerSelected = itemSelectedOnContextMenu.find("h3").text();
+        let printer = searchPrinterByName(printerSelected);
+        printer.status = "paused";
+        updatePrinter(printer);
+    });
+
+    $("#dropdown-cancel").on("click", function() {
+        let printerSelected = itemSelectedOnContextMenu.find("h3").text();
+        let printer = searchPrinterByName(printerSelected);
+        //BORRAR COLA, TODO
+    });
+
+    //listenerMenuContextPrinter();
     listenerMenuContextTable();
     listenerNewPrinter();
     listenerNewGroup();
@@ -206,6 +230,45 @@ function addPrinterToGroup(printerAlias, groupName) {
         Pmgr.globalState.groups[index].printers.push(printer.id);
         $("#new-group-printer").modal('toggle');
     }
+    updateGroupsOfAPrinter(searchPrinterByName(printerAlias));
+    updatePrinterAccordion(Pmgr.globalState.printers);
+}
+
+//función para borrar una impresora
+function removePrinter(printerAlias) {
+    for (let i = 0; i < Pmgr.globalState.printers.length; i++) {
+        if (Pmgr.globalState.printers[i].id === printerAlias) {
+            Pmgr.globalState.printers.splice(i, 1);
+        }
+    }
+    updatePrinterAccordion(Pmgr.globalState.printers);
+
+    updateQueue(Pmgr.globalState.jobs, Pmgr.resolve(Pmgr.globalState.printers[0].id));
+    updatePrinterDetails(Pmgr.resolve(Pmgr.globalState.printers[0].id));
+    updateGroupsOfAPrinter(Pmgr.resolve(Pmgr.globalState.printers[0].id));
+}
+
+// actualizar datos de una impresora
+function updatePrinter(printer) {
+    let index = Pmgr.globalState.printers.findIndex(p => p.id === printer.id);
+    Pmgr.globalState.printers[index].alias = printer.alias;
+    Pmgr.globalState.printers[index].location = printer.location;
+    Pmgr.globalState.printers[index].model = printer.model;
+    Pmgr.globalState.printers[index].ip = printer.ip;
+    Pmgr.globalState.printers[index].status = printer.status;
+    updatePrinterDetails(printer);
+    updatePrinterAccordion(Pmgr.globalState.printers);
+}
+
+// función para desasignar una impresora de un grupo
+function removeGroupOfPrinter(printerAlias, groupName) {
+    let printer = searchPrinterByName(printerAlias);
+    let group = searchGroupByName(groupName);
+
+    let printerIndex = group.printers.findIndex(p => p === printer.id);
+    let index = Pmgr.globalState.groups.findIndex(g => g.name === groupName);
+    Pmgr.globalState.groups[index].printers.splice(printerIndex, 1);
+
     updateGroupsOfAPrinter(searchPrinterByName(printerAlias));
     updatePrinterAccordion(Pmgr.globalState.printers)
 }
@@ -304,7 +367,18 @@ function updateQueue(jobs, printers) {
         queue.append(`<td scope="row">${job.fileName}</td>`);
         queue.append(`<td scope="row">${job.owner}</td>`);
         queue.append(`<td scope="row">${translations.get(printer.status)}</td>`);
-        queue.append(`<td scope="row"></td>`);
+        queue.append(`<td scope="row">
+        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-box-arrow-in-up-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5z"/>
+        <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0v-5z"/>
+      </svg>
+        
+        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash2-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.037 3.225l1.684 10.104A2 2 0 0 0 5.694 15h4.612a2 2 0 0 0 1.973-1.671l1.684-10.104C13.627 4.224 11.085 5 8 5c-3.086 0-5.627-.776-5.963-1.775z"/>
+            <path fill-rule="evenodd" d="M12.9 3c-.18-.14-.497-.307-.974-.466C10.967 2.214 9.58 2 8 2s-2.968.215-3.926.534c-.477.16-.795.327-.975.466.18.14.498.307.975.466C5.032 3.786 6.42 4 8 4s2.967-.215 3.926-.534c.477-.16.795-.327.975-.466zM8 5c3.314 0 6-.895 6-2s-2.686-2-6-2-6 .895-6 2 2.686 2 6 2z"/>
+            </svg>
+            <img class="" src="" title="" alt="" >
+            </td>`);
         queue.append(`</tr>`);
     });
 }
@@ -341,8 +415,21 @@ function updatePrinterDetails(printer) {
     $("#printers-group-list").append('<h4> Grupos</h4>');
     $("#printers-group-list").append('<div id="groups-of-printers" class=" border border-primary rounded group-tags-container limit-groups-printer"></div>');
 
-    $("#printer-ip-text").append(
-        `<div title="Imprimir" class="image-upload">
+    //Botones de editar imprimir y borrar
+    let printerButtons = $(`<div class="d-flex justify-content-around">`);
+    //Boton editar
+    let buttonEdit = $(` <div title="Editar" class="image-upload">
+    <svg width="1.75em" height="1.75em" viewBox="0 0 16 16" class="bi bi-pencil-fill" type="button" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+    </svg>
+    </div> `);
+
+    buttonEdit.click(function() {
+        editPrinter(printer.id)
+    });
+
+    //Boton imprimir
+    let buttonPrint = $(`<div title="Imprimir" class="image-upload">
     <label for="file-input">
     <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-printer-fill" type="button" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5z"/>
@@ -351,9 +438,26 @@ function updatePrinterDetails(printer) {
     </svg>
     </label>
     <input id="file-input" type="file" />
-    </div>
-    `
-    );
+    </div>`);
+
+    //Boton eliminar
+    let buttonDelete = $(`<div title="Borrar" class="image-upload">
+    <svg width="1.75em" height="1.75em" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
+    </svg>
+    </div>`);
+
+    buttonDelete.click(function() {
+        if (confirm("¿Seguro que quieres borrar la impresora?")) {
+            removePrinter(printer.id)
+        }
+    });
+
+    printerButtons.append(buttonEdit);
+    printerButtons.append(buttonPrint);
+    printerButtons.append(buttonDelete);
+    printerButtons.append(`</div>`);
+    $("#printer-ip-text").append(printerButtons);
 }
 
 // función para actualizar la cola de impresión de las impresoras, luego se puede extender para que actualice tambien la cola de grupo
@@ -383,7 +487,7 @@ function updatePrintersOfAGroup(printers) {
 
     printers.forEach(printer => {
         let new_element = $(`<span id="list-card-item-printer" type="button" class="badge badge-secondary badge-details">${printer.alias}</span>`);
-        new_element.click(function () {
+        new_element.click(function() {
             update(printer.alias, false)
         });
         $("#printers-in-group").append(new_element).append(' ');
@@ -397,10 +501,17 @@ function updateGroupsOfAPrinter(printer) {
     let groups = groupsOfPrinter(printer);
     groups.forEach(group => {
         let mainElement = $(`<div class="width25">`);
-        mainElement.click(function () {
+        mainElement.click(function() {
             update(group.name, true)
         });
+
+        let removeGroupPrinter = $(`<svg aria-hidden="true" type="button" class="svg-icon iconClearSm" width="14" height="14" viewBox="0 0 14 14"><path d="M12 3.41L10.59 2 7 5.59 3.41 2 2 3.41 5.59 7 2 10.59 3.41 12 7 8.41 10.59 12 12 10.59 8.41 7 12 3.41z"></path></svg>`);
+        removeGroupPrinter.click(function() {
+            removeGroupOfPrinter(printer.alias, group.name)
+        });
+        mainElement.append(removeGroupPrinter);
         mainElement.append(`<span id="list-card-item-group" type="button" class="badge badge-secondary badge-details ${groupImageDict[group.name][1]}">${group.name}</span></div>`);
+
         $("#groups-of-printers").append(mainElement)
     });
 
@@ -458,12 +569,15 @@ function updatePrinterAccordion(printers) {
             extra_group = `<span class="badge badge-secondary">+${listOfGroups.length - max_visible_groups}</span>`
         }
 
-        let mainElement = $(`<button id="printer-button" class="card list-card-item center">`);
-        mainElement.click(function () {
+        let mainElement = $(`<div id="printer-button" class="card list-card-item center">`);
+        mainElement.click(function() {
             update(printer.alias, false)
         });
 
         let printerItem = $(`<div class="printerItemContainer">`);
+        // printerItem.on(function() {
+        listenerMenuContextPrinter(printerItem);
+        //})
         printerItem.append(`<img class="card-img-top card-img-left" src="img/win_printer.png" alt="Imagen de la impresora">`);
         printerItem.append(`<h3 class="card-title printer_id">${printer.alias}</h3>`);
         printerItem.append(`<img class="icon" src="img/status/${printer.status}.png" alt="Imagen de la impresora">`);
@@ -484,7 +598,7 @@ function updateGroupAccordion(groups) {
     groups.forEach(group => {
 
         let mainElement = $(`<div class="card list-card-item center">`);
-        mainElement.click(function () {
+        mainElement.click(function() {
             update(group.name, true)
         });
 
@@ -566,7 +680,7 @@ async function populate(minPrinters, maxPrinters, minGroups, maxGroups, jobCount
 // Código de pegamento, ejecutado sólo una vez que la interfaz esté cargada.
 // Generalmente de la forma $("selector").cosaQueSucede(...)
 //
-$(function () {
+$(function() {
 
     // funcion de actualización de ejemplo. Llámala para refrescar interfaz
     function update(result) {
@@ -590,11 +704,11 @@ $(function () {
     }
 
     // Servidor a utilizar. También puedes lanzar tú el tuyo en local (instrucciones en Github)
-    const serverUrl = "http://127.0.0.1:8080/api/" //"http://localhost:8080/api/";
+    const serverUrl = "http://gin.fdi.ucm.es:3128/api/" //"http://localhost:8080/api/";
     Pmgr.connect(serverUrl);
 
     // ejemplo de login
-    Pmgr.login("HDY0IQ", "cMbwKQ").then(d => {
+    Pmgr.login("g10", "loQueQuerais1").then(d => {
         if (d !== undefined) {
             const u = Gb.resolve("HDY0IQ");
             console.log("login ok!", u);
