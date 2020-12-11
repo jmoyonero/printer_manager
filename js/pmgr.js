@@ -4,10 +4,16 @@ import * as Pmgr from './pmgrapi.js'
 
 // mapa con las traducciones de los estados de impresoras
 let translations = new Map();
+/*
 translations.set('paused', 'Pausado');
 translations.set('no_ink', 'Sin tinta');
 translations.set('no_paper', 'Sin papel');
 translations.set('printing', 'Imprimiendo');
+*/
+translations.set('PAUSED', 'Pausado');
+translations.set('NO_INK', 'Sin tinta');
+translations.set('NO_PAPER', 'Sin papel');
+translations.set('PRINTING', 'Imprimiendo');
 
 // lista de urls de imágenes
 let imagesPath = new Array();
@@ -207,7 +213,8 @@ function addPrinter(printer) {
         // TODO: Cambiemos este alert
         alert('Ya existe una impresora con el alias ' + printer.alias)
     } else {
-        Pmgr.globalState.printers.push(printer);
+        Pmgr.addPrinter(printer);
+        //Pmgr.globalState.printers.push(printer);
         $("#new-printer").modal('toggle');
     }
     updatePrinterAccordion(Pmgr.globalState.printers);
@@ -255,9 +262,9 @@ function removePrinter(printerAlias) {
     }
     updatePrinterAccordion(Pmgr.globalState.printers);
 
-    updateQueue(Pmgr.globalState.jobs, Pmgr.resolve(Pmgr.globalState.printers[0].id));
-    updatePrinterDetails(Pmgr.resolve(Pmgr.globalState.printers[0].id));
-    updateGroupsOfAPrinter(Pmgr.resolve(Pmgr.globalState.printers[0].id));
+    updateQueue(Pmgr.globalState.jobs, Pmgr.globalState.printers[0]);
+    updatePrinterDetails(Pmgr.globalState.printers[0]);
+    updateGroupsOfAPrinter(Pmgr.globalState.printers[0]);
 }
 
 // actualizar datos de una impresora
@@ -375,6 +382,7 @@ function updateQueue(jobs, printers) {
     }
 
     // obtenemos una lista con los ids de las impresoras a partir de la lista de impresoras
+    //console.log(printers);
     let printerIds = printers.map(p => p.id);
 
     jobs.filter(j => printerIds.includes(j.printer)).forEach(job => {
@@ -804,6 +812,7 @@ async function populate(minPrinters, maxPrinters, minGroups, maxGroups, jobCount
             groups: groups
         });
     }
+
 }
 
 //
@@ -812,20 +821,19 @@ async function populate(minPrinters, maxPrinters, minGroups, maxGroups, jobCount
 // Generalmente de la forma $("selector").cosaQueSucede(...)
 //
 $(function() {
-
     // funcion de actualización de ejemplo. Llámala para refrescar interfaz
     function update(result) {
         try {
             //HEMOS EL ORDEN PARA PODER INICIALZIAR LOS GRUPOS
-
             assignGroupImages();
             updateGroupAccordion(Pmgr.globalState.groups);
             updatePrinterAccordion(Pmgr.globalState.printers);
 
             showDetails();
-            updateQueue(Pmgr.globalState.jobs, Pmgr.resolve(0));
-            updatePrinterDetails(Pmgr.resolve(0));
-            updateGroupsOfAPrinter(Pmgr.resolve(0));
+            //Pmgr.globalState.printers[0]
+            updateQueue(Pmgr.globalState.jobs, Pmgr.globalState.printers[0]);
+            updatePrinterDetails(Pmgr.globalState.printers[0]);
+            updateGroupsOfAPrinter(Pmgr.globalState.printers[0]);
 
             initializeListeners(); //Función con todas la funcionalidad necesaria para el funcionamiento de la interfaz (colocada aqui por evitar los problemas de la API)
 
@@ -835,21 +843,16 @@ $(function() {
     }
 
     // Servidor a utilizar. También puedes lanzar tú el tuyo en local (instrucciones en Github)
-    const serverUrl = "http://127.0.0.1:8080/api/" //"http://localhost:8080/api/";
+    const serverUrl = "http://gin.fdi.ucm.es:3128/api/" //"http://localhost:8080/api/";
     Pmgr.connect(serverUrl);
 
     // ejemplo de login
-    Pmgr.login("HDY0IQ", "cMbwKQ").then(d => {
+    Pmgr.login("g10", "loQueQuerais1").then(d => {
         if (d !== undefined) {
-            const u = Gb.resolve("HDY0IQ");
-            console.log("login ok!", u);
+            update();
         } else {
             console.log(`error en login (revisa la URL: ${serverUrl}, y verifica que está vivo)`);
             console.log("Generando datos de ejemplo para uso en local...")
-
-            populate();
-
-            update();
         }
     });
 });
@@ -860,3 +863,5 @@ window.populate = populate
 window.Pmgr = Pmgr;
 
 // window.createPrinterItem = createPrinterItemupdater.locatio ""deja
+
+//Pmgr.globalState.printers
