@@ -26,6 +26,25 @@
         bottom: 0;
         height: inherit;
     }
+    
+    .w3-padding-48,
+    .w3-row {
+        padding-bottom: 5px !important;
+        padding-top: 10px !important;
+    }
+    
+    .w3-row:first-of-type {
+        padding-bottom: 5px !important;
+        padding-top: 48px !important;
+    }
+    
+    .patch-title {
+        border-bottom: 1px solid #009688;
+    }
+    
+    .patch-date {
+        color: black;
+    }
 </style>
 
 <body>
@@ -35,7 +54,7 @@
         <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
             <a class="w3-bar-item w3-button w3-right w3-hide-large w3-hover-white w3-large w3-theme-l1" href="javascript:void(0)" onclick="w3_open()"><i class="fa fa-bars"></i></a>
             <a href="#" class="w3-bar-item w3-button w3-theme-l1">Printer Manager Grupo 10</a>
-            <a href="index.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Interfaz PRM</a>
+            <a href="index.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">>Interfaz PRM</a>
         </div>
     </div>
 
@@ -45,13 +64,9 @@
             <i class="fa fa-remove"></i>
         </a>
         <h4 class="w3-bar-item"><b></b></h4>
-        <!--
-  <a class="w3-bar-item w3-button w3-hover-black" href="index.html">Interfaz Realizada</a>
-   
-  <a class="w3-bar-item w3-button w3-hover-black" href="#"></a>
-  <a class="w3-bar-item w3-button w3-hover-black" href="#"></a>
-  <a class="w3-bar-item w3-button w3-hover-black" href="#"></a>
-  -->
+
+        <a class="w3-bar-item w3-button w3-hover-black" href="#2sd">Versión 2.0.0</a>
+        <a class="w3-bar-item w3-button w3-hover-black" href="#1st">Versión 1.0.0</a>
     </nav>
 
     <!-- Overlay effect when opening sidebar on small screens -->
@@ -62,8 +77,112 @@
 
         <div class="w3-row w3-padding-48">
             <div class="w3-twothird w3-container">
+                <a name="2sd"></a>
+                <h1 class="w3-text-teal patch-title">Release 2.0.0 <span class="patch-date">(2020-11-29)</span></h1>
+                <h2 class="w3-text-teal">Introducción</h2>
+                <p>
+                    Hemos añadido más funciones con respecto a la anterior entrega, pero hay pequeños detalles que no están implementados.
+                </p>
 
-                <h1 class="w3-text-teal">Introducción</h1>
+            </div>
+            <div class="w3-third w3-container">
+                <!--
+      <p class="w3-border w3-padding-large w3-padding-32 w3-center">AD</p>
+      <p class="w3-border w3-padding-large w3-padding-64 w3-center">AD</p>
+	  -->
+            </div>
+        </div>
+
+        <div class="w3-row">
+            <div class="w3-twothird w3-container">
+                <h2 class="w3-text-teal">Funciones Implementadas</h2>
+
+                <ul>
+                    <li>Añadir impresora</li>
+                    <li>Añadir grupo</li>
+                    <li>Añadir grupo a impresora</li>
+                    <li>Algunos tooltip</li>
+                    <li>Etiquetas de grupos con colores aleatorios</li>
+                    <li>Imágenes de grupos aleatorios</li>
+                    <li>Pausar impresora solo cuando está imprimiendo</li>
+                    <li>Eliminar trabajo de cola de impresión</li>
+                    <li>Funciones con clic derecho(no todas) en impresoras y la tabla de la cola de impresión</li>
+                    <li>Búsqueda de impresoras y grupos</li>
+                    <li>Editar impresoras</li>
+                    <li>Eliminar Impresora</li>
+                </ul>
+
+
+            </div>
+            <div class="w3-third w3-container">
+                <!--
+      <p class="w3-border w3-padding-large w3-padding-32 w3-center">AD</p>
+      <p class="w3-border w3-padding-large w3-padding-64 w3-center">AD</p>
+	  -->
+            </div>
+        </div>
+
+        <div class="w3-row w3-padding-32">
+            <div class="w3-twothird w3-container">
+                <h2 class="w3-text-teal">Cambios con respecto a la anterior entrega</h2>
+                <ul>
+                    <li>Identificación de las impresoras y grupos y sus detalles haciendo enfásis en el valor con un color negro</li>
+                    <li>Cambio de filtro por un buscador funcional</li>
+                    <li>Añadido una marca funcional con una X al dejar el ratón encima de un tag de grupo</li>
+                    <li>Dropdown de añadir un grupo a una impresora cambiado por un dropdown buscador</li>
+                    <li>Ahora en vez de mostrar "..." cuando hay más de 3 impresoras muestra la cantidad de impresoras extra que hay</li>
+                    <li>En los identificadores de la lista de grupos e impresoras aparece el número de elementos de cada lista existente</li>
+                    <li>Más colores para las etiquetas de grupos</li>
+                </ul>
+            </div>
+
+        </div>
+
+
+        <div class="w3-row w3-padding-32">
+            <div class="w3-twothird w3-container">
+                <h2 class="w3-text-teal">Funciones No Implementadas</h2>
+                <ul>
+                    <li>Enviar trabajo a otra impresora</li>
+                    <li>Modales de borrar un impresora, pausar una impresora con click derecho, añadir una impresora o grupo de impresora con el mismo nombre</li>
+                    <li>Borrar una cola de trabajo de impresora entera con click derecho</li>
+                    <li>En el dropdown para añadir una impresora a un grupo, al intentar añadirlo a un grupo en el que ya esté, no muestra una modal. Pero lo implementaremos haciendo que no se muestren los grupos a los que ya esté la impresora.</li>
+                    <li>Algún que otra funcionalidad del submenú(click derecho).</li>
+
+                </ul>
+            </div>
+            <div class="w3-third w3-container">
+                <!--
+                <p class="w3-border w3-padding-large w3-padding-32 w3-center">AD</p>
+                <p class="w3-border w3-padding-large w3-padding-64 w3-center">AD</p>
+	            -->
+            </div>
+        </div>
+
+        <div class="w3-row w3-padding-32">
+            <div class="w3-twothird w3-container">
+                <h2 class="w3-text-teal">Preguntas</h2>
+                <ul>
+                    <li>¿Establecemos un estatus estatico a las nuevas impresoras o las generamos aleatoriamente?</li>
+
+                </ul>
+            </div>
+            <div class="w3-third w3-container">
+                <!--
+                <p class="w3-border w3-padding-large w3-padding-32 w3-center">AD</p>
+                <p class="w3-border w3-padding-large w3-padding-64 w3-center">AD</p>
+	            -->
+            </div>
+        </div>
+
+        <!--1º Entrega-->
+
+        <div class="w3-row w3-padding-48">
+            <div class="w3-twothird w3-container">
+                <a name="1st"></a>
+                <h1 class="w3-text-teal patch-title">Release 1.0.0 <span class="patch-date">(2020-11-22)</span></h1>
+
+                <h2 class="w3-text-teal">Introducción</h2>
                 <p>
                     Hemos intentado añadir todas los componentes posibles de tal manera que se parezca lo más posible a lo que realizamos en la entrega anterior. Aun así hay varias cosas que no hemos podido implementar. En los siguientes apartados explicamos lo que hemos
                     implementado, lo que hemos cambiado ya sea porque creíamos que era mejor o por incapacidad de hacerlo con las tecnologías usadas, o lo que no hemos añadido por falta de tiempo.
@@ -83,19 +202,18 @@
 
         <div class="w3-row">
             <div class="w3-twothird w3-container">
-                <h1 class="w3-text-teal">Funciones Implementadas</h1>
-                <p>
-                    <ul>
-                        <li>Pantalla Principal separada en 3 partes.</li>
-                        <li>Lista de Impresoras y Grupos teniendo en cuenta lo generado por la API.</li>
-                        <li>Mensajes Modales para añadir impresoras o grupos y para filtrar estos.</li>
-                        <li>Grupos a los que pertenece una impresora con etiquetas e imágenes constantes y con sentido según los datos generados por la API.</li>
-                        <li>Navegación entre grupos e impresoras totalmente funcional.</li>
-                        <li>Cola de Impresión según los datos de la API.</li>
-                        <li>Submenú con click derecho en lista de impresoras y la cola de impresión.</li>
-                    </ul>
+                <h2 class="w3-text-teal">Funciones Implementadas</h2>
 
-                </p>
+                <ul>
+                    <li>Pantalla Principal separada en 3 partes.</li>
+                    <li>Lista de Impresoras y Grupos teniendo en cuenta lo generado por la API.</li>
+                    <li>Mensajes Modales para añadir impresoras o grupos y para filtrar estos.</li>
+                    <li>Grupos a los que pertenece una impresora con etiquetas e imágenes constantes y con sentido según los datos generados por la API.</li>
+                    <li>Navegación entre grupos e impresoras totalmente funcional.</li>
+                    <li>Cola de Impresión según los datos de la API.</li>
+                    <li>Submenú con click derecho en lista de impresoras y la cola de impresión.</li>
+                </ul>
+
             </div>
             <div class="w3-third w3-container">
                 <!--
@@ -107,7 +225,7 @@
 
         <div class="w3-row w3-padding-32">
             <div class="w3-twothird w3-container">
-                <h1 class="w3-text-teal">Cambios</h1>
+                <h2 class="w3-text-teal">Cambios</h2>
                 <ul>
                     <li>División de la pantalla central en 3 partes --> [IMPRESORAS | DETALLES | GRUPOS].</li>
                     <li>Mensajes modales para crear grupos o impresoras y filtrar, en vez de usar la pantalla central para todos los detalles o funciones.</li>
@@ -122,7 +240,7 @@
 
         <div class="w3-row w3-padding-32">
             <div class="w3-twothird w3-container">
-                <h1 class="w3-text-teal">Funciones No Implementadas</h1>
+                <h2 class="w3-text-teal">Funciones No Implementadas</h2>
                 <ul>
                     <li>Funciones de Filtro en el mensaje modal.</li>
                     <li>Buscadores.</li>
@@ -138,6 +256,8 @@
 	  -->
             </div>
         </div>
+
+
 
 
         <footer id="myFooter">

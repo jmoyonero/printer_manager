@@ -47,7 +47,7 @@ li.nav-item {
 /* Track */
 
  ::-webkit-scrollbar-track {
-    background-color: var(--colorPrimary);
+    background-color: rgb(206, 206, 206);
     border-radius: 5px;
 }
 
@@ -55,7 +55,7 @@ li.nav-item {
 /* Handle */
 
  ::-webkit-scrollbar-thumb {
-    background: rgb(223, 223, 223);
+    background: rgb(109, 202, 255);
     border-radius: 30px;
 }
 
@@ -113,7 +113,7 @@ div.d-inline-flex {
 }
 
 .column-title {
-    background-color: var(--colorPrimary);
+    background-color: rgb(97, 96, 96);
     font-weight: bold;
     text-align: center;
     font-size: 14px;
@@ -146,7 +146,7 @@ div.d-inline-flex {
 }
 
 .badge-group-2 {
-    background-color: var(--colorPrimary);
+    background-color: rgb(165, 99, 119);
 }
 
 .badge-group-3 {
@@ -154,7 +154,31 @@ div.d-inline-flex {
 }
 
 .badge-group-4 {
-    background-color: var(--blueApp);
+    background-color: rgb(158, 175, 252);
+}
+
+.badge-group-5 {
+    background-color: grey;
+}
+
+.badge-group-6 {
+    background-color: rgb(141, 206, 43);
+}
+
+.badge-group-7 {
+    background-color: goldenrod;
+}
+
+.badge-group-8 {
+    background-color: rgb(248, 83, 111);
+}
+
+.badge-group-9 {
+    background-color: orange;
+}
+
+.badge-group-10 {
+    background-color: rgb(83, 131, 202);
 }
 
 .icon {
@@ -188,7 +212,7 @@ div.d-inline-flex {
 
 .card-table {
     overflow-y: scroll;
-    max-height: 40vh;
+    max-height: 36vh;
 }
 
 .card-table thead {
@@ -236,4 +260,155 @@ div.d-inline-flex {
 .bi-plus-circle-fill:hover {
     color: #0081f9;
     transition: all 0.5s ease
+}
+
+.bi-printer-fill {
+    color: rgb(177, 177, 177);
+}
+
+.bi-printer-fill:hover {
+    color: black;
+}
+
+.bi-box-arrow-in-up-right:hover {
+    color: black;
+}
+
+.bi-box-arrow-in-up-right {
+    color: rgb(177, 177, 177);
+}
+
+.bi-trash2-fill:hover {
+    color: black;
+}
+
+.bi-check-square-fill {
+    color: lightgreen;
+}
+
+.bi-check-square-fill:hover {
+    color: green
+}
+
+.bi-x-square-fill {
+    color: rgb(177, 177, 177);
+}
+
+.bi-x-square-fill:hover {
+    color: red
+}
+
+.bi-trash2-fill {
+    color: rgb(177, 177, 177);
+}
+
+.bi-pencil-fill {
+    color: rgb(177, 177, 177);
+}
+
+.bi-pencil-fill:hover {
+    color: black;
+}
+
+.bi-trash-fill {
+    color: rgb(177, 177, 177);
+}
+
+.bi-trash-fill:hover {
+    color: red;
+}
+
+.printer-tag-title {
+    color: rgb(189, 189, 189);
+}
+
+#groups-of-printers {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+#groups-of-printers div {
+    flex: 0 0 23%;
+    position: relative;
+}
+
+.iconClearSm {
+    position: absolute;
+    top: -2px;
+    right: 2px;
+    color: grey;
+    display: none;
+    background-color: rgb(250, 0, 0);
+    opacity: 0.9;
+    border-radius: 45%;
+}
+
+#groups-of-printers div:hover .iconClearSm {
+    display: block;
+}
+
+.width25 {
+    max-width: 25%;
+    margin: auto;
+}
+
+select {
+    width: 100%;
+}
+
+#form-select-pritner .btn {
+    margin-top: 16px;
+}
+
+.color-grey {
+    background: rgb(173, 173, 173);
+    border-color: rgb(148, 148, 148);
+}
+
+.color-grey:hover {
+    background: rgb(189, 189, 189);
+    border-color: rgb(189, 189, 189);
+}
+
+.table-responsive {
+    height: 400px;
+    overflow: scroll;
+}
+
+thead tr:nth-child(1) th {
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.dropdown-menu input {
+    display: none;
+}
+
+.has-search .form-control {
+    padding-left: 2.375rem;
+}
+
+.has-search .form-control-feedback {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    width: 2.375rem;
+    height: 2.375rem;
+    line-height: 2.375rem;
+    text-align: center;
+    pointer-events: none;
+    color: #aaa;
+}
+
+.search {
+    width: 100%;
+}
+
+span[contenteditable="true"] {
+    background: rgb(219, 255, 221);
+    border-radius: 5px;
 }
