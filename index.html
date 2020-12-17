@@ -47,7 +47,7 @@
                 <ul class="navbar-nav nav-justified w-100 text-center">
                     <li class="nav-item" type="button" data-toggle="modal" data-target="#new-printer">
 
-                        <a class="nav-link d-flex flex-column" href="#">
+                        <a class="nav-link d-flex flex-column hover-color" href="#">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd"
                                   d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
@@ -56,7 +56,7 @@
                         </a>
                     </li>
 
-                    <li class="nav-item d-flex flex-column" type="button" data-toggle="modal" data-target="#new-group">
+                    <li class="nav-item d-flex flex-column hover-color" type="button" data-toggle="modal" data-target="#new-group">
                         <a class="nav-link d-flex flex-column" href="#">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-collection-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path d="M0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7z"/>
@@ -158,7 +158,7 @@
 
     <!-- Group ADD modal -->
     <div class="modal fade" id="new-group-printer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="myModalLabel">Añadir a un Grupo de Impresoras</h4>
@@ -166,7 +166,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 </div>
-                <form id="form-select-pritner" action="">
+                <form id="form-select-printer" action="">
                     <input id="select-printer-groups" class="form-control" list="list-printer-groups">
                     <datalist id="list-printer-groups">
                         <option value="Nada"></option>
@@ -180,9 +180,33 @@
         </div>
     </div>
 
+    <!--ADD PRINTER TO GROUP MODAL-->
+    <div class="modal fade" id="new-printer-group" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel2">Añadir una Impresora a un Grupo</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <form id="form-select-printer2" action="">
+                    <input id="select-printer-for-groups" class="form-control" list="list-printer-for-groups">
+                    <datalist id="list-printer-for-groups">
+                        <option value="Nada"></option>
+                    </datalist>
+
+                    <button id="add-printer-to-group2" type="submit" class="btn btn-primary">Añadir</button>
+                    <button type="submit" class="btn btn-primary color-grey" data-dismiss="modal">Cancelar</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Printer Modal -->
     <div class="modal fade" id="new-printer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog  modal-dialog-centered" role="document">
 
             <div class="modal-content">
                 <div class="modal-header">
@@ -219,7 +243,7 @@
 
     <!-- Group Modal -->
     <div class="modal fade" id="new-group" tabindex="-1" role="dialog" aria-labelle d by="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="myModalLabel">Nueva Grupo de Impresoras</h4>
@@ -234,6 +258,35 @@
                     </div>
                     <button id="button-new-group" type="submit" class="btn btn-primary">Crear</button>
                     <button type="submit" class="btn btn-primary color-grey" data-dismiss="modal">Cancelar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmation-modal" tabindex="-1" role="dialog" aria-labelle d by="confirmation-modal-message" aria-hidden="true">
+        <div class="modal-dialog  modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header form-inline justify-content-around">
+                    <h4 class="modal-title" id="confirmation-modal-message">***** Mensaje *****</h4>
+                </div>
+                <form class="form-inline justify-content-around">
+                    <button id="accept-button1" type="submit" class="btn btn-primary">Aceptar</button>
+                    <button type="cancel-button" class="btn btn-primary color-grey" data-dismiss="modal">Cancelar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Information Modal -->
+    <div class="modal fade" id="information-modal" tabindex="-1" role="dialog" aria-labelle d by="information-modal-message" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header form-inline justify-content-around">
+                    <h4 class="modal-title" id="information-modal-message">***** Mensaje *****</h4>
+                </div>
+                <form class="form-inline justify-content-around">
+                    <button id="accept-button2" type="submit" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
                 </form>
             </div>
         </div>

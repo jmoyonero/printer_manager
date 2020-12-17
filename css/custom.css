@@ -412,3 +412,20 @@ span[contenteditable="true"] {
     background: rgb(219, 255, 221);
     border-radius: 5px;
 }
+
+a.hover-color:hover,
+li.hover-color:hover {
+    background-color: var(--colorPrimary);
+    opacity: 0.5;
+}
+
+a.hover-color:hover span,
+li.hover-color:hover span {
+    color: white;
+    font-weight: bold;
+}
+
+a.hover-color:hover svg,
+li.hover-color:hover svg {
+    color: white;
+}
